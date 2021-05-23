@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+>
+
+    <bean id="std" class="com.mayur.patil.spring.model.Student">
+        <!--        init-method="myInit" destroy-method="myDestroy">-->
+        <property name="id" value="52"/>
+        <property name="name" value="Mayur Patil"/>
+        <property name="course" value="IT"/>
+        <!--        <constructor-arg ref="add"/>-->
+        <property name="address" ref="add"/>
+    </bean>
+
+    <bean id="add" class="com.mayur.patil.spring.model.Address">
+        <property name="city" value="Mumbai"/>
+        <property name="state" value="Maharastra"/>
+        <property name="pinCode" value="401105"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="customerService" class="com.mayur.patil.spring.model.Customer">
+        <property name="name" value="Mayur Patil"/>
+        <property name="url" value="http:here.com/mayur"/>
+    </bean>
+
+    <bean id="afterMethod" class="com.mayur.patil.spring.model.AfterMethod"/>
+    <bean id="beforeMethod" class="com.mayur.patil.spring.model.BeforeMethod"/>
+    <bean id="aroundMethod" class="com.mayur.patil.spring.model.AroundMethod"/>
+
+    <bean id="op" class="com.mayur.patil.spring.aop.Operation"/>
+    <bean id="track" class="com.mayur.patil.spring.aop.Track"/>
+    <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"
+/>
+    <bean id="service" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="customerService"/>
+        <property name="interceptorNames">
+            <list>
+                <value>aroundMethod</value>
+            </list>
+        </property>
+    </bean>
+    <!--    <bean id="targetService" class="com.mayur.patil.spring.model.OneMethod"/>-->
+
+    <!--    <bean id="cachingInterceptor" class="com.mayur.patil.spring.model.AfterMethod"/>-->
+
+    <!--    <bean id="cachedService" class="org.springframework.aop.framework.ProxyFactoryBean">-->
+    <!--        <property name="target" ref="targetService"/>-->
+    <!--        <property name="interceptorNames">-->
+    <!--            <list>-->
+    <!--                <value>cachingInterceptor</value>-->
+    <!--            </list>-->
+    <!--        </property>-->
+    <!--    </bean>-->
+</beans>

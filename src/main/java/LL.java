@@ -45,6 +45,7 @@ public class LL
     return n;
   }
 
+
   // 1 -> 2 -> 3 -> 4 -> 5 -> null
   // 1 <- 2
   static class Node
@@ -59,5 +60,6 @@ public class LL
   }
 
 }
+
 
 
