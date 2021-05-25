@@ -15,11 +15,9 @@ public class BstAddNode
     }
   }
 
-  static Node insert(Node root, int key)
+  static Node insert(Node root, Node newNode)
   {
-    Node newNode = new Node(key);
-    if (root == null)
-      return newNode;
+
     // Pointer to start traversing from root and
     // traverses downward path to search
     // where the new node to be inserted
@@ -32,13 +30,13 @@ public class BstAddNode
     while (x != null)
     {
       y = x;
-      if (key < x.key)
+      if (newNode.key < x.key)
         x = x.left;
       else
         x = x.right;
     }
 
-    if (key < y.key)
+    if (newNode.key < y.key)
       y.left = newNode;
     else
       y.right = newNode;
@@ -68,13 +66,14 @@ public class BstAddNode
         / \   / \
        20 40 60 80 */
 
-    Node root = insert(null, 50);
-    insert(root, 30);
-    insert(root, 20);
-    insert(root, 40);
-    insert(root, 70);
-    insert(root, 60);
-    insert(root, 80);
+    Node root = new Node(50);
+
+    insert(root, new Node(30));
+    insert(root, new Node(20));
+    insert(root, new Node(40));
+    insert(root, new Node(70));
+    insert(root, new Node(60));
+    insert(root, new Node(80));
 
     Inorder(root);
   }
