@@ -34,13 +34,28 @@ class GetData
 
   private GetData()
   {
+    try
+    {
+      Thread.sleep(1000);
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
+    }
+    System.out.print("Thread wake up... ");
   }
 
   public static GetData getInstance()
   {
     if (data == null)
     {
-      data = new GetData();
+      synchronized (GetData.class)
+      {
+        if (data == null)
+        {
+          data = new GetData();
+        }
+      }
     }
     return data;
   }
