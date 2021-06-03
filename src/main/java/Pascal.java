@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Pascal
@@ -20,8 +21,7 @@ public class Pascal
     if (numRows == 0)
       return triangle;
 
-    List<Integer> row = new ArrayList<>();
-    row.add(1);
+    List<Integer> row = new ArrayList<>(Arrays.asList(1));
     triangle.add(row);
 
     for (int i = 1; i < numRows; i++)
