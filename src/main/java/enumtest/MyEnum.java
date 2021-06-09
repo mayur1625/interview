@@ -6,8 +6,8 @@ public class MyEnum
   {
     for (LEVEL l : LEVEL.values())
     {
-      System.out.println(l.ordinal());
-      System.out.println(l.findEnum("LOW"));
+      System.out.println("=>" + l.ordinal());
+      //System.out.println(l.findEnum("LOW"));
     }
   }
 
@@ -23,7 +23,8 @@ public class MyEnum
       i = val;
     }
 
-    public LEVEL findEnum(String str){
+    public LEVEL findEnum(String str)
+    {
       return LEVEL.valueOf(str);
     }
   }
