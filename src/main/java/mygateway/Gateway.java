@@ -17,28 +17,54 @@ public class Gateway
 
   static String csvPath = "C:\\Users\\maypatil\\Documents\\Projects\\Akela\\Akela08\\nds_compiler\\basicnav\\etc\\config\\gateway_replacements.csv";
   static Connection con;
+  static Map<Integer, List<RangeIntersectionIds>> mapOfRII = new HashMap<>();
+  static List<GatewayIds> gatewayIdsList = new ArrayList<>();
 
   public static void main(String[] args) throws IOException
   {
-//    Map map = mappedGateway();
+    Map mappedGateway = mappedGateway();
     Gateway app = new Gateway();
     connect();
     app.selectAll();
 
-//    Map<String, Map<String, String>> map = readCSV("C:\\Users\\maypatil\\Documents\\SPRINT\\Gateway\\Gateway_Replacement_CSV.csv");
-//    Iterator<Map.Entry<String, Map<String, String>>> iter = map.entrySet().iterator();
-//    int count = 0;
-//    while (iter.hasNext())
-//    {
-//      Map.Entry<String, Map<String, String>> entry = iter.next();
-//      System.out.println(++count + ": k=>" + entry.getKey());
-//      Iterator<Map.Entry<String, String>> iter2 = entry.getValue().entrySet().iterator();
-//      while (iter2.hasNext())
-//      {
-//        Map.Entry<String, String> entry2 = iter2.next();
-//        System.out.println("v1=>" + entry2.getKey() + ", v2=>" + entry2.getValue());
-//      }
-//    }
+    Map<Integer, Map<Integer, String>> map = readCSV("C:\\Users\\maypatil\\Documents\\SPRINT\\Gateway\\Gateway_Replacement_CSV.csv");
+    Iterator<Map.Entry<Integer, Map<Integer, String>>> iter = map.entrySet().iterator();
+    //int count = 0;
+    //int sum = 0;
+    while (iter.hasNext())
+    {
+      Map.Entry<Integer, Map<Integer, String>> entry = iter.next();
+      //System.out.println(++count + ": k=>" + entry.getKey());
+      Iterator<Map.Entry<Integer, String>> iter2 = entry.getValue().entrySet().iterator();
+      //sum += entry.getValue().size();
+      while (iter2.hasNext())
+      {
+        Map.Entry<Integer, String> entry2 = iter2.next();
+
+        if (mapOfRII.containsKey(entry2.getKey()))
+        {
+          List<RangeIntersectionIds> llist = mapOfRII.get(entry2.getKey());
+          Iterator<RangeIntersectionIds> iiter = llist.iterator();
+          boolean yes = false;
+          while (iiter.hasNext())
+          {
+            String isUsed = iiter.next().isUsed;
+            if (isUsed != null && isUsed.equals("Y"))
+            {
+              //System.out.println(isUsed);
+              yes = true;
+            }
+          }
+//          if (yes)
+//            System.out.print("Y");
+//          else
+//            System.out.print("N");
+        }
+
+        //System.out.println("v1=>" + entry2.getKey() + ", v2=>" + entry2.getValue());
+      }
+    }
+    //System.out.println("Total loaded map: " + sum);
   }
 
   private static void connect()
@@ -56,10 +82,6 @@ public class Gateway
     }
   }
 
-  Map<Integer, List<RangeIntersectionIds>> mapOfRII = new HashMap<>();
-
-  List<GatewayIds> gatewayIdsList = new ArrayList<>();
-
   public void selectAll()
   {
     String sql = "SELECT PACKED_TILE_ID, TPID, PVID, IS_USED, LAT ,LON FROM RANGE_INTERSECTION_IDS WHERE "
@@ -71,8 +93,10 @@ public class Gateway
     try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(sql))
     {
       // loop through the result set
+      int count = 0;
       while (rs.next())
       {
+        count++;
         RangeIntersectionIds rii = new RangeIntersectionIds(
             rs.getInt("PACKED_TILE_ID"),
             rs.getInt("TPID"),
@@ -94,24 +118,23 @@ public class Gateway
           mapOfRII.put(rs.getInt("PVID"), list);
         }
       }
+      System.out.println("Total " + count + " range intersaction loaded..");
     }
     catch (SQLException e)
     {
       System.out.println(e.getMessage());
     }
-    sql = "SELECT * FROM GATEWAY_IDS WHERE "
-        + "PACKED_TILE_ID not LIKE ('20%') AND "
-        + "PACKED_TILE_ID not LIKE ('84%') AND "
-        + "PACKED_TILE_ID not LIKE ('33%') AND "
-        + "PACKED_TILE_ID not LIKE ('13%')";
+    sql = "SELECT * FROM GATEWAY_IDS";
 
     try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(sql))
     {
       // loop through the result set
+      int cnt = 0;
       while (rs.next())
       {
+        cnt++;
         GatewayIds gi = new GatewayIds(
-        rs.getInt("PACKED_TILE_ID"),
+            rs.getInt("PACKED_TILE_ID"),
             rs.getInt("TPID"),
             rs.getInt("GATEWAY_ID"),
             rs.getString("IS_USED"),
@@ -119,12 +142,13 @@ public class Gateway
         );
         gatewayIdsList.add(gi);
       }
+      System.out.println("Total " + cnt + " gateways loaded..");
     }
     catch (SQLException e)
     {
       System.out.println(e.getMessage());
     }
-    System.out.println(gatewayIdsList.size());
+    //System.out.println(gatewayIdsList.size());
   }
 
   public static Map<Integer, Integer> mappedGateway()
@@ -149,20 +173,40 @@ public class Gateway
     return map;
   }
 
-  public static Map<String, Map<String, String>> readCSV(String csv)
+  public static Map<Integer, Map<Integer, String>> readCSV(String csv)
   {
-    Map<String, Map<String, String>> map = new LinkedHashMap<>();
+    Map<Integer, Map<Integer, String>> map = new LinkedHashMap<>();
     try (Scanner sc = new Scanner(new File(csv)))
     {
       //sc.useDelimiter(",");   //sets the delimiter pattern
       sc.next(); // Skip header
+      int cnt = 0;
       while (sc.hasNext())
       {
+        cnt++;
         String str[] = sc.next().split(",");
-        Map<String, String> key = map.containsKey(str[1]) ? map.get(str[1]) : new LinkedHashMap<>();
-        key.put(str[0], str[2]);
-        map.put(str[1], key);
+        //System.out.println(Arrays.toString(str));
+        Map<Integer, String> key = null;
+        if (map.containsKey(Integer.parseInt(str[1])))
+        {
+          key = map.get(Integer.parseInt(str[1]));
+          key.put(Integer.parseInt(str[0]), str[2]);
+        }
+        else
+        {
+          key = new LinkedHashMap<>();
+          key.put(Integer.parseInt(str[0]), str[2]);
+          map.put(Integer.parseInt(str[1]), key);
+        }
+
+
+        //Map<Integer, String> key = map.containsKey(str[1]) ? map.get(str[1]) : new LinkedHashMap<>();
+//        key.put(Integer.parseInt(str[0]), str[2]);
+//        map.put(Integer.parseInt(str[1]), key);
       }
+      //System.out.println(map.get(847364469));
+      System.out.println("Total " + cnt + " read from xlsx, keys: " + map.size());
+      //map.entrySet().stream().forEach(a -> System.out.print(a.getValue().size()));
     }
     catch (Exception e)
     {
